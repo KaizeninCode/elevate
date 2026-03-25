@@ -3,6 +3,7 @@ import React from "react";
 import AuthForm from "@/components/AuthForm";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "@/components/AppButton";
+import { router } from "expo-router";
 
 const Login = () => {
   return (
@@ -12,7 +13,7 @@ const Login = () => {
         <View className="gap-y-1 font-playful">
           <Text>New Password</Text>
           <TextInput
-            className="border border-primary px-4 py-2 rounded-xl"
+            className="border border-primary p-4 rounded-xl"
             placeholder="********"
             placeholderTextColor={"gray"}
             secureTextEntry={true}
@@ -21,7 +22,7 @@ const Login = () => {
         <View className="gap-y-1 font-playful">
           <Text>Confirm New Password</Text>
           <TextInput
-            className="border border-primary px-4 py-2 rounded-xl mb-8"
+            className="border border-primary p-4 rounded-xl mb-8"
             placeholder="********"
             placeholderTextColor={"gray"}
             secureTextEntry={true}
@@ -31,6 +32,7 @@ const Login = () => {
       {/* CTA BUTTON */}
         <AppButton
           title='Reset your password'
+          onPress={() => router.push('/screens/auth/login')}
         />
     </SafeAreaView>
   );

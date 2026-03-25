@@ -10,9 +10,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        regular: "InstrumentSans-Regular",
-        medium: "InstrumentSans-Medium",
-        bold: "InstrumentSans-Bold",
+        instrumentRegular: "InstrumentSans-Regular",
+        instrumentMedium: "InstrumentSans-Medium",
+        instrumentBold: "InstrumentSans-Bold",
         playful: "Hubballi-Regular",
       },
       backgroundColor: {

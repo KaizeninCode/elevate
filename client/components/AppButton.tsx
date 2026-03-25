@@ -3,12 +3,12 @@ import React from "react";
 
 interface AppButtonProps {
     title: string;
-    // onPressed: Void<>;
+    onPress: () => void
 }
 
-const AppButton = ({title} : AppButtonProps) => {
+const AppButton = ({title, onPress} : AppButtonProps) => {
   return (
-    <Pressable className="p-4 rounded-xl bg-primary shadow-sm shadow-primary w-3/5 mx-auto mt-4">
+    <Pressable className="p-4 rounded-xl bg-primary shadow-sm shadow-primary w-3/5 mx-auto mt-4" onPress={onPress}>
       <Text className="text-white text-center">{title}</Text>
     </Pressable>
   );

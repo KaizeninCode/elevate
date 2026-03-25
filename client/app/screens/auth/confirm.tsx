@@ -2,6 +2,7 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppButton from "@/components/AppButton";
+import { router } from "expo-router";
 
 const Login = () => {
   return (
@@ -13,11 +14,11 @@ const Login = () => {
             Enter the 6 digit code that was sent to{" "}
             <Text className="font-bold">email@example.com</Text>
           </Text>
-          <TextInput className="border border-primary px-4 py-2 rounded-xl my-4" />
+          <TextInput className="border border-primary p-4 rounded-xl my-4" />
         </View>
       </View>
       {/* CTA BUTTON */}
-      <AppButton title="Confirm your email" />
+      <AppButton title="Confirm your email" onPress={() => router.push('/screens/auth/login')}/>
 
       <Pressable>
         <Text className="text-center mt-8">
