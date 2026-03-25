@@ -73,7 +73,7 @@ const TabsLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="notes"
         options={{
           title: "Notes",
@@ -86,7 +86,7 @@ const TabsLayout = () => {
             />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="profile"
         options={{
