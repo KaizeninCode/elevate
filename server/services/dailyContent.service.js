@@ -4,13 +4,15 @@ import DailyContent from "../models/DailyContent.js";
 import dotenv from "dotenv";
 import { ensureVerseIndex } from "./verseIndex.service.js";
 import { getDailyVerseId } from "../utils/seededRandom.js";
+import { generateWithDeepseek } from "./deepseek.service.js";
+
 
 dotenv.config();
 
 const BIBLE_API_KEY = process.env.BIBLE_API_KEY;
 const BIBLE_ID = process.env.BIBLE_ID; // NIV from API
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const anthropic = new Anthropic(ANTHROPIC_API_KEY);
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+// const anthropic = new Anthropic(ANTHROPIC_API_KEY);
 
 const fetchVerseOfTheDay = async (date) => {
   // pull index from MongoDB
@@ -43,15 +45,15 @@ const fetchVerseOfTheDay = async (date) => {
   };
 };
 
-const fetchDevotional = async () => {
-  const res = await axios.get(
-    "https://beta.ourmanna.com/api/v1/get/?format=json&order=daily",
-  );
-  const { text, reference, version } = res.data.verse.details;
-  return { text, reference, version };
-};
+// const fetchDevotional = async () => {
+//   const res = await axios.get(
+//     "https://beta.ourmanna.com/api/v1/get/?format=json&order=daily",
+//   );
+//   const { text, reference, version } = res.data.verse.details;
+//   return { text, reference, version };
+// };
 
-const harmonizeDevotional = async (verse, rawDevotional) => {
+const fetchDevotional = async (verse) => {
   const prompt = `
     You are writing a daily devotional for a Bible app.
 
@@ -71,14 +73,21 @@ const harmonizeDevotional = async (verse, rawDevotional) => {
     }
     `;
 
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    messages: [{ role: "user", content: prompt }],
-  });
+  
 
-  const raw = message.content[0].text.trim();
-  return JSON.parse(raw);
+  const raw = await generateWithDeepseek(prompt)
+  //   return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Failed to parse AI devotional JSON:", raw, e);
+    return {
+      title: verse.reference,
+      body: "A devotional could not be generated today.",
+      reflection:
+        "Take a moment to reflect on this verse and how it speaks to you today.",
+    };
+  }
 };
 
 export const getOrFetchDailyContent = async () => {
@@ -86,33 +95,13 @@ export const getOrFetchDailyContent = async () => {
   const cached = await DailyContent.findOne({ date: today });
   if (cached) return cached;
 
-  // fetch verse + raw devotional in parallel
-  const [wordOfTheDay, rawDevotional] = await Promise.all([
-    fetchVerseOfTheDay(today),
-    fetchDevotional(),
-  ]);
+  const wordOfTheDay = await fetchVerseOfTheDay(today);
+  const devotional = await fetchDevotional(wordOfTheDay);
 
-  //  harmonize - A rewrites devotional around the verse
-  let harmonized;
-  try {
-    harmonized = await harmonizeDevotional(wordOfTheDay, rawDevotional);
-  } catch {
-    harmonized = {
-      title: rawDevotional.title,
-      body: rawDevotional.body,
-      reflection:
-        "Take a moment to reflect on this verse and how it speaks to you today.",
-    };
-  }
   const doc = await DailyContent.create({
     date: today,
     wordOfTheDay,
-    devotional: {
-      title: harmonized.title,
-      body: harmonized.body,
-      reflection: harmonized.reflection,
-      attribution: 'Inspired by OurManna.',
-    },
+    devotional,
   });
 
   return doc;
