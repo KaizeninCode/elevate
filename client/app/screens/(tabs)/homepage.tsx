@@ -62,10 +62,8 @@ const HomePage = () => {
       </View>
 
       {/* DEVOTIONAL SUMMARY */}
-      <View className="w-full h-1/2 p-3 items-center justify-center gap-y-4">
-        <Text className="text-primary text-2xl text-center font-instrumentBold">
-          Devotional Summary
-        </Text>
+      <View className="w-full h-2/5 p-3 items-center justify-center gap-y-4">
+        
         <Text className="text-primary text-2xl text-center font-instrumentBold">
           {devotional.title}
         </Text>
@@ -73,7 +71,7 @@ const HomePage = () => {
           <Text className="font-instrumentRegular text-xl">
             {devotional.body}
           </Text>
-          <Text className="font-instrumentRegular text-xl">
+          <Text className="font-instrumentBold text-xl mt-4">
             {devotional.reflection}
           </Text>
           {devotional.attribution && (

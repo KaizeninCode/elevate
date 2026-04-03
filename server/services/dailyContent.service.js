@@ -76,6 +76,7 @@ const fetchDevotional = async (verse) => {
   
 
   const raw = await generateWithDeepseek(prompt)
+  console.log(raw)
   //   return JSON.parse(raw);
   try {
     return JSON.parse(raw);
@@ -106,3 +107,4 @@ export const getOrFetchDailyContent = async () => {
 
   return doc;
 };
+

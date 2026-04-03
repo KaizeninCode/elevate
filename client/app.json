@@ -1,19 +1,20 @@
 {
   "expo": {
     "name": "Elevate",
-    "slug": "app",
+    "slug": "elevate",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E6F4FE"
+    },
     "ios": {
-      "supportsTablet": true,
-      "splash": {
-        "image": "./assets/images/splash.png",
-        "resizeMode": "contain"
-      }
+      "supportsTablet": true
     },
     "assetBundlePatterns": ["assets/fonts/*"],
     "android": {
@@ -23,10 +24,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "splash": {
-        "image": "./assets/images/splash.png",
-        "resizeMode": "contain"
-      },
+      
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -41,7 +39,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash.png",
-          "resizeMode": "contain"
+          "resizeMode": "contain",
+          "backgroundColor": "#E6F4FE"
         }
       ]
     ],
