@@ -10,6 +10,7 @@ const ScripturesLayout = () => {
       <Stack.Screen name='help'/>
       <Stack.Screen name='privacy'/>
       <Stack.Screen name='profile'/>
+      <Stack.Screen name='preferences'/>
     </Stack>
   )
 }

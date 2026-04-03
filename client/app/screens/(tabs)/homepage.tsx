@@ -15,7 +15,7 @@ const HomePage = () => {
           <Text className="font-playful text-white text-3xl text-center">
             Lorem ipsum dolor sit amet.
           </Text>
-          <ScrollView className="px-4">
+          <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
             <Text className="font-playful text-2xl text-white">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui
               distinctio blanditiis repellendus culpa fugiat corrupti veniam,
@@ -34,7 +34,7 @@ const HomePage = () => {
         <Text className="text-primary text-2xl text-center font-instrumentBold">
           Devotional Summary
         </Text>
-        <ScrollView className="px-4">
+        <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
           <Text className="font-instrumentRegular text-xl">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui
             distinctio blanditiis repellendus culpa fugiat corrupti veniam,

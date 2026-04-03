@@ -12,7 +12,7 @@ import AppButton from "@/components/AppButton";
 import { router } from "expo-router";
 import HorizontalRule from "@/components/HorizontalRule";
 
-const settingsItems = [
+const settingsItems: SettingsItem[] = [
   {
     id: '1',
     title: 'Profile',
@@ -38,6 +38,11 @@ const settingsItems = [
   },
   {
     id: '5',
+    title: 'Preferences',
+    link: '/screens/(tabs)/settings/preferences',
+  },
+  {
+    id: '6',
     title: 'Log Out',
     link: '/screens/auth/login',
   },
@@ -49,17 +54,24 @@ const settingsLinks = [
   '/screens/(tabs)/settings/about',
   '/screens/(tabs)/settings/help',
   '/screens/(tabs)/settings/privacy',
+  '/screens/(tabs)/settings/preferences',
   '/screens/auth/login',
 ] as const;
 
-type SettingsLink = typeof settingsLinks[number];
+type SettingsLink = '/screens/(tabs)/settings/profile' |
+  '/screens/(tabs)/settings/about'|
+  '/screens/(tabs)/settings/help' |
+  '/screens/(tabs)/settings/privacy'|
+  '/screens/(tabs)/settings/preferences'|
+  '/screens/auth/login';
 
-type SettingsItemProps = {
+type SettingsItem = {
+  id: string;
   title: string;
   link: SettingsLink;
 };
 
-const SearchItem = ({title, link}:SettingsItemProps) => (
+const SearchItem = ({title, link}:SettingsItem) => (
   <View className="my-1 p-4  justify-center">
     <TouchableOpacity className="flex flex-row items-center justify-between" onPress={() => router.push(link)}>
       <Text className="font-instrumentRegular text-xl">{title}</Text>
@@ -86,7 +98,7 @@ const Settings = () => {
       {/* SETTINGS PAGE LIST ITEMS */}
       <FlatList
                 data={settingsItems}
-                renderItem={({item}) =>  <SearchItem title={item.title} link={item.link}/>}
+                renderItem={({item}) =>  <SearchItem id={item.id} title={item.title} link={item.link}/>}
                 keyExtractor={item => item.id}
                 className="w-full my-4"
               />
