@@ -79,7 +79,7 @@ const registerUser = async (req, res) => {
     // send verification email
     await resend.emails.send({
       from: "Phil from Elevate <onboarding@resend.dev>",
-      to: email,
+      to: user.email,
       subject: "Your Elevate verification code",
       text: `Your verification code is ${user.emailVerificationCode}.\nIt will expire in 15 minutes.`,
     });
@@ -143,7 +143,7 @@ const requestPasswordReset = async (req, res) => {
     // send password reset email
     await resend.emails.send({
       from: "Phil from Elevate <onboarding@resend.dev>",
-      to: email,
+      to: user.email,
       subject: "Reset your Elevate password",
       text: `Your verification code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
     });
