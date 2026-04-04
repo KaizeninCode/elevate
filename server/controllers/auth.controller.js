@@ -8,6 +8,7 @@ dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
 const resend = new Resend(process.env.RESEND_API_KEY);
+console.log("Resend key loaded:", !!resend);
 
 const loginUser = async (req, res) => {
   const { email, phone, password } = req.body;
@@ -77,12 +78,17 @@ const registerUser = async (req, res) => {
     await user.save();
 
     // send verification email
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "Phil from Elevate <onboarding@resend.dev>",
-      to: user.email,
+      to: email,
       subject: "Your Elevate verification code",
       text: `Your verification code is ${user.emailVerificationCode}.\nIt will expire in 15 minutes.`,
     });
+
+    if (error) {
+      console.error("Resend error:", error);
+      return res.status(500).json({ message: "Error sending email", error });
+    }
 
     res.status(201).json({
       message: "User registered successfully",
@@ -96,6 +102,7 @@ const registerUser = async (req, res) => {
 
 const confirmUserEmail = async (req, res) => {
   const { code } = req.body;
+
   try {
     /*
     find user by code --> POTENTIAL ISSUE: Users could have the same code if they register around the same time
@@ -104,7 +111,7 @@ const confirmUserEmail = async (req, res) => {
     */
 
     const user = await User.findOne({
-      emailVerifivationCode: code,
+      emailVerificationCode: code,
       emailVerificationCodeExpires: { $gt: Date.now() },
     });
     if (!user)
@@ -117,7 +124,9 @@ const confirmUserEmail = async (req, res) => {
     user.emailVerificationCode = null;
     user.emailVerificationCodeExpires = null;
 
+    
     await user.save();
+
 
     return res.status(200).json({ message: "Email verified successfully." });
   } catch (error) {
@@ -126,7 +135,8 @@ const confirmUserEmail = async (req, res) => {
 };
 
 //  generate 6 digit code that will be used for email verification or password reset
-const getConfirmResetCode = () => Math.floor(100000 + Math.random() * 900000);
+const getConfirmResetCode = () =>
+  String(Math.floor(100000 + Math.random() * 900000));
 
 const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
@@ -164,7 +174,7 @@ const requestConfirmationCode = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    user.emailVerificationCode = getConfirmResetCode();
+    user.emailVerificationCode = String(getConfirmResetCode());
     user.emailVerificationCodeExpires = Date.now() + 15 * 60 * 1000; // -> expires in 15 minutes
 
     await user.save();
