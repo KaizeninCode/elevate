@@ -104,28 +104,19 @@ const registerUser = async (req, res) => {
 };
 
 const confirmUserEmail = async (req, res) => {
-  const { email, code } = req.body;
+  const { code } = req.body;
   try {
     /*
-    find user by email
+    find user by code --> POTENTIAL ISSUE: Users could have the same code if they register around the same time
     check if code matches and is not expired
     if valid, set isEmailVerified to true and clear code and expiration
     */
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found." });
+    const user = await User.findOne({ emailVerifivationCode: code, emailVerificationCodeExpires: { $gt: Date.now()} });
+    if (!user) return res.status(404).json({ message: "Invalid or expired code." });
 
     if (user.isEmailVerified)
       return res.status(400).json({ message: "Email already verified." });
-
-    if (!user.emailVerificationCode)
-      return res.status(400).json({ message: "Invalid verification code." });
-
-    if (code !== user.emailVerificationCode)
-      return res.status(400).json({ message: "Incorrect verification code." });
-
-    if (Date.now() > user.emailVerificationCodeExpires)
-      return res.status(400).json({ message: "Expired verification code." });
 
     user.isEmailVerified = true;
     user.emailVerificationCode = null;
