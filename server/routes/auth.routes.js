@@ -3,6 +3,7 @@ import {
   confirmUserEmail,
   loginUser,
   registerUser,
+  requestConfirmationCode,
   requestPasswordReset,
   resetUserPassword,
 } from "../controllers/auth.controller.js";
@@ -172,5 +173,35 @@ router.post("/reset", resetUserPassword);
  *         description: Error sending email with code.
  */
 router.post("/reset", requestPasswordReset);
+
+
+/**
+ * @swagger
+ * /auth/request-code:
+ *   get:
+ *     tags:
+ *       - Authentication
+ *     summary: Get a new email verification code
+ *     description: Sends a new email verification code sent to a user's email.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: email@example.com
+ *
+ *     responses:
+ *       200:
+ *         description: Email verification code generated, saved to user, and sent via email.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Error sending email with code.
+ */
+router.post("/request-code", requestConfirmationCode);
 
 export default router;

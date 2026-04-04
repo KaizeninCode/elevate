@@ -71,7 +71,7 @@ const registerUser = async (req, res) => {
 
     // save to user instance
     user.emailVerificationCode = verificationCode;
-    user.emailVerificationCodeExpires = Date.now() + 15000; // -> expires in 15 minutes
+    user.emailVerificationCodeExpires = Date.now() + 15 * 60 * 1000; // -> expires in 15 minutes
 
     await user.save();
 
@@ -88,7 +88,7 @@ const registerUser = async (req, res) => {
       from: { name: "Phil from Elevate", address: process.env.EMAIL_USER },
       to: { name: user.name, address: user.email },
       subject: "Verify your Elevate email",
-      text: `Hi, ${user.name.split(" ")[0]}! Your verification code is ${verificationCode}.\nIt will expire in 15 minutes.`,
+      text: `Hi, ${user.name.split(" ")[0]}! Your verification code is ${user.emailVerificationCode}.\nIt will expire in 15 minutes.`,
     };
 
     transporter.sendMail(mailOptions);
@@ -137,11 +137,11 @@ const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
   
   try {
-    const user = User.findOne({email})
+    const user = await User.findOne({email})
     if (!user) return res.status(404).json({ message: "User not found." });
   
     user.passwordResetCode = getConfirmResetCode()
-    user.passwordResetCodeExpires = Date.now() + 15000 // -> expires in 15 minutes
+    user.passwordResetCodeExpires = Date.now() + 15 * 60 * 1000 // -> expires in 15 minutes
   
     await user.save()
   
@@ -158,7 +158,46 @@ const requestPasswordReset = async (req, res) => {
       from: { name: "Phil from Elevate", address: process.env.EMAIL_USER },
       to: email,
       subject: "Reset your Elevate password",
-      text: `Your password reset code is ${code}.\nIt will expire in 15 minutes.`,
+      text: `Your password reset code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
+    };
+    
+    transporter.sendMail(mailOptions);
+    
+    res.status(200).json({message: 'Password reset code generated, saved to user, and sent via email.'})
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error sending email with code", error });
+  }
+   
+};
+
+
+const requestConfirmationCode = async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const user = await User.findOne({email})
+    if (!user) return res.status(404).json({ message: "User not found." });
+  
+    user.emailVerificationCode = getConfirmResetCode()
+    user.emailVerificationCodeExpires = Date.now() + 15 * 60 * 1000 // -> expires in 15 minutes
+  
+    await user.save()
+  
+    // send password reset email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    
+    const mailOptions = {
+      from: { name: "Phil from Elevate", address: process.env.EMAIL_USER },
+      to: email,
+      subject: "Reset your Elevate password",
+      text: `Your password reset code is ${user.emailVerificationCode}.\nIt will expire in 15 minutes.`,
     };
     
     transporter.sendMail(mailOptions);
@@ -214,4 +253,4 @@ const logout = async (req, res) => {
   res.json({ message: "User logged out successfully" });
 };
 
-export { loginUser, registerUser, confirmUserEmail, resetUserPassword, requestPasswordReset };
+export { loginUser, registerUser, confirmUserEmail, resetUserPassword, requestPasswordReset, requestConfirmationCode };
