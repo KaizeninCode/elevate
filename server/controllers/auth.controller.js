@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import jsonwebtoken from "jsonwebtoken";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
+
 import User from "../models/User.js";
 import { Resend } from "resend";
 
@@ -149,12 +148,10 @@ const requestPasswordReset = async (req, res) => {
       text: `Your verification code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
     });
 
-    res
-      .status(200)
-      .json({
-        message:
-          "Password reset code generated, saved to user, and sent via email.",
-      });
+    res.status(200).json({
+      message:
+        "Password reset code generated, saved to user, and sent via email.",
+    });
   } catch (error) {
     res.status(500).json({ message: "Error sending email with code", error });
   }
@@ -180,12 +177,10 @@ const requestConfirmationCode = async (req, res) => {
       text: `Your verification code is ${user.emailVerificationCode}.\nIt will expire in 15 minutes.`,
     });
 
-    res
-      .status(200)
-      .json({
-        message:
-          "Email verification code generated, saved to user, and sent via email.",
-      });
+    res.status(200).json({
+      message:
+        "Email verification code generated, saved to user, and sent via email.",
+    });
   } catch (error) {
     res.status(500).json({ message: "Error sending email with code", error });
   }
