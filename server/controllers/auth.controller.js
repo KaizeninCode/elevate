@@ -102,6 +102,7 @@ const registerUser = async (req, res) => {
 
 const confirmUserEmail = async (req, res) => {
   const { code } = req.body;
+  console.log("[DEBUG] Code received:", code, typeof code);
 
   try {
     /*
@@ -114,6 +115,12 @@ const confirmUserEmail = async (req, res) => {
       emailVerificationCode: code,
       emailVerificationCodeExpires: { $gt: Date.now() },
     });
+
+    console.log(
+      "[DEBUG] Code in DB:",
+      user.emailVerificationCode,
+      typeof user.emailVerificationCode,
+    );
     if (!user)
       return res.status(404).json({ message: "Invalid or expired code." });
 
@@ -133,8 +140,7 @@ const confirmUserEmail = async (req, res) => {
 };
 
 //  generate 6 digit code that will be used for email verification or password reset
-const getConfirmResetCode = () =>
-  String(Math.floor(100000 + Math.random() * 900000));
+const getConfirmResetCode = () => Math.floor(100000 + Math.random() * 900000);
 
 const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
