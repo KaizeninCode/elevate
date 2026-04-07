@@ -102,6 +102,7 @@ const registerUser = async (req, res) => {
 
 const confirmUserEmail = async (req, res) => {
   const { code } = req.body;
+  code = Number(code)
   console.log("[DEBUG] Code received:", code, typeof code);
 
   try {
@@ -202,6 +203,7 @@ const requestConfirmationCode = async (req, res) => {
 
 const resetUserPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
+  code  = Number(code)
   console.log("[DEBUG] Code received:", code, typeof code);
   try {
     /*
