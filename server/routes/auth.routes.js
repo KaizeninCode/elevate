@@ -172,7 +172,7 @@ router.post("/reset", resetUserPassword);
  *       500:
  *         description: Error sending email with code.
  */
-router.post("/reset", requestPasswordReset);
+router.get("/reset", requestPasswordReset);
 
 
 /**

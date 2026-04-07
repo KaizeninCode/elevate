@@ -124,9 +124,7 @@ const confirmUserEmail = async (req, res) => {
     user.emailVerificationCode = null;
     user.emailVerificationCodeExpires = null;
 
-    
     await user.save();
-
 
     return res.status(200).json({ message: "Email verified successfully." });
   } catch (error) {
@@ -153,7 +151,7 @@ const requestPasswordReset = async (req, res) => {
     // send password reset email
     await resend.emails.send({
       from: "Phil from Elevate <onboarding@resend.dev>",
-      to: user.email,
+      to: email,
       subject: "Reset your Elevate password",
       text: `Your verification code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
     });
@@ -174,12 +172,12 @@ const requestConfirmationCode = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    user.emailVerificationCode = String(getConfirmResetCode());
+    user.emailVerificationCode = getConfirmResetCode();
     user.emailVerificationCodeExpires = Date.now() + 15 * 60 * 1000; // -> expires in 15 minutes
 
     await user.save();
 
-    // send password reset email
+    // send confirmation email
     await resend.emails.send({
       from: "Phil from Elevate <onboarding@resend.dev>",
       to: email,
@@ -198,6 +196,7 @@ const requestConfirmationCode = async (req, res) => {
 
 const resetUserPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
+  console.log("[DEBUG] Code received:", code, typeof code);
   try {
     /*
     find user by email
@@ -206,6 +205,11 @@ const resetUserPassword = async (req, res) => {
     */
 
     const user = await User.findOne({ email });
+    console.log(
+      "[DEBUG] Code in DB:",
+      user.passwordResetCode,
+      typeof user.passwordResetCode,
+    );
     if (!user) return res.status(404).json({ message: "User not found." });
 
     if (!user.passwordResetCode)
@@ -220,13 +224,11 @@ const resetUserPassword = async (req, res) => {
       return res.status(400).json({ message: "Expired password reset code." });
 
     // reset password -> create new user instance with same details but new password to trigger pre-save hook for hashing
-    const userWithNewPassword = [{ ...user.toObject(), password: newPassword }];
+    user.password = newPassword;
+    user.passwordResetCode = null;
+    user.passwordResetCodeExpires = null;
 
-    // clear code and expiration
-    userWithNewPassword.passwordResetCode = null;
-    userWithNewPassword.passwordResetCodeExpires = null;
-
-    await userWithNewPassword.save();
+    await user.save();
 
     return res.status(200).json({ message: "Password reset successfully." });
   } catch (error) {
