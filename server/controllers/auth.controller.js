@@ -102,7 +102,6 @@ const registerUser = async (req, res) => {
 
 const confirmUserEmail = async (req, res) => {
   const { code } = req.body;
-  code = Number(code)
   console.log("[DEBUG] Code received:", code, typeof code);
 
   try {
@@ -141,7 +140,7 @@ const confirmUserEmail = async (req, res) => {
 };
 
 //  generate 6 digit code that will be used for email verification or password reset
-const getConfirmResetCode = () => Math.floor(100000 + Math.random() * 900000);
+const getConfirmResetCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
@@ -203,7 +202,6 @@ const requestConfirmationCode = async (req, res) => {
 
 const resetUserPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
-  code  = Number(code)
   console.log("[DEBUG] Code received:", code, typeof code);
   try {
     /*
