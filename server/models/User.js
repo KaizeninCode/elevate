@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema(
 
 // pre-save hook to hash password (must use regular function, not arrow)
 userSchema.pre("save", async function () {
-//   if (!this.isModified("password")) return next();
+   // --> IMPORTANT. Will help avoid rehashing the alread hashed password. By the time the user tries to log in, their stored password has already been hashed multiple times and no longer matches what they entered on registration/reset, which causes the login bug.
+   if (!this.isModified("password")) return next();
   try {
     const salt = await bcryptjs.genSalt(12);
     this.password = await bcryptjs.hash(this.password, salt);
