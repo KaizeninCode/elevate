@@ -136,7 +136,7 @@ const confirmUserEmail = async (req, res) => {
 
     return res.status(200).json({ message: "Email verified successfully." });
   } catch (error) {
-    return res.status(500).json({ message: "Error confirming email", error });
+    return res.status(500).json({ message: "Error confirming email", error: error.message });
   }
 };
 
