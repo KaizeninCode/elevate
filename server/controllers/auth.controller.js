@@ -145,7 +145,7 @@ const getConfirmResetCode = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 const requestPasswordReset = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   try {
     const user = await User.findOne({ email });
