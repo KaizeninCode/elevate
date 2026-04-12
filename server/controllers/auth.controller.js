@@ -12,7 +12,7 @@ console.log("Resend key loaded:", !!resend);
 
 const loginUser = async (req, res) => {
   const { email, phone, password } = req.body;
-  
+
   try {
     let user = null;
     if (email) {
@@ -21,7 +21,6 @@ const loginUser = async (req, res) => {
       user = await User.findOne({ phone });
     }
 
-    
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -103,7 +102,7 @@ const registerUser = async (req, res) => {
 
 const confirmUserEmail = async (req, res) => {
   const { code } = req.body;
-  console.log("[DEBUG] Code received:", code, typeof code);
+  // console.log("[DEBUG] Code received:", code, typeof code);
 
   try {
     /*
@@ -117,11 +116,11 @@ const confirmUserEmail = async (req, res) => {
       emailVerificationCodeExpires: { $gt: Date.now() },
     });
 
-    console.log(
-      "[DEBUG] Code in DB:",
-      user.emailVerificationCode,
-      typeof user.emailVerificationCode,
-    );
+    // console.log(
+    //   "[DEBUG] Code in DB:",
+    //   user.emailVerificationCode,
+    //   typeof user.emailVerificationCode,
+    // );
     if (!user)
       return res.status(404).json({ message: "Invalid or expired code." });
 
@@ -136,7 +135,9 @@ const confirmUserEmail = async (req, res) => {
 
     return res.status(200).json({ message: "Email verified successfully." });
   } catch (error) {
-    return res.status(500).json({ message: "Error confirming email", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error confirming email", error: error.message });
   }
 };
 
@@ -161,7 +162,7 @@ const requestPasswordReset = async (req, res) => {
       from: "Phil from Elevate <onboarding@resend.dev>",
       to: email,
       subject: "Reset your Elevate password",
-      text: `Your verification code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
+      text: `Your password reset code is ${user.passwordResetCode}.\nIt will expire in 15 minutes.`,
     });
 
     res.status(200).json({
@@ -169,7 +170,7 @@ const requestPasswordReset = async (req, res) => {
         "Password reset code generated, saved to user, and sent via email.",
     });
   } catch (error) {
-    res.status(500).json({ message: "Error sending email with code", error });
+    res.status(500).json({ message: "Error sending email with code" });
   }
 };
 
@@ -203,8 +204,8 @@ const requestConfirmationCode = async (req, res) => {
 };
 
 const resetUserPassword = async (req, res) => {
-  const { email, code, newPassword } = req.body;
-  console.log("[DEBUG] Code received:", code, typeof code);
+  const { code, newPassword } = req.body;
+  // console.log("[DEBUG] Code received:", code, typeof code);
   try {
     /*
     find user by email
@@ -212,26 +213,22 @@ const resetUserPassword = async (req, res) => {
     if valid, reset password and clear code and expiration
     */
 
-    const user = await User.findOne({ email });
-    console.log(
-      "[DEBUG] Code in DB:",
-      user.passwordResetCode,
-      typeof user.passwordResetCode,
-    );
-    if (!user) return res.status(404).json({ message: "User not found." });
+    const user = await User.findOne({
+      passwordResetCode: code,
+      passwordResetCodeExpires: { $gt: Date.now() },
+    });
+    // console.log(
+    //   "[DEBUG] Code in DB:",
+    //   user.passwordResetCode,
+    //   typeof user.passwordResetCode,
+    // );
 
-    if (!user.passwordResetCode)
-      return res.status(400).json({ message: "Invalid password reset code." });
-
-    if (code !== user.passwordResetCode)
+    if (!user)
       return res
         .status(400)
-        .json({ message: "Incorrect password reset code." });
+        .json({ message: "Invalid or expired password reset code." });
 
-    if (Date.now() > user.passwordResetCodeExpires)
-      return res.status(400).json({ message: "Expired password reset code." });
-
-    // reset password -> create new user instance with same details but new password to trigger pre-save hook for hashing
+    // reset password
     user.password = newPassword;
     user.passwordResetCode = null;
     user.passwordResetCodeExpires = null;
@@ -240,7 +237,7 @@ const resetUserPassword = async (req, res) => {
 
     return res.status(200).json({ message: "Password reset successfully." });
   } catch (error) {
-    return res.status(500).json({ message: "Error resetting password", error });
+    return res.status(500).json({ message: "Error resetting password", error: error.message });
   }
 };
 
