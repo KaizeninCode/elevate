@@ -54,7 +54,7 @@ const HomePage = () => {
             {wordOfTheDay.reference}
           </Text>
           <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
-            <Text className="font-playful text-2xl text-white text-left">
+            <Text className="font-playful text-3xl text-white">
               {wordOfTheDay.text}
             </Text>
           </ScrollView>
