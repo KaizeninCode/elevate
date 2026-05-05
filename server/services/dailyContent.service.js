@@ -83,7 +83,7 @@ const fetchDevotional = async (verse) => {
   console.log(raw);
   //   return JSON.parse(raw);
   try {
-    return JSON.parse(sanitizeJSON(raw));
+    return JSON.parse(raw);
   } catch (e) {
     console.error("Failed to parse AI devotional JSON:", raw, e);
     return {
@@ -113,19 +113,19 @@ export const getOrFetchDailyContent = async () => {
 };
 
 // sanitize the JSON response when necessary -> catch edge cases
-const sanitizeJSON = (raw) => {
-  // First, try to extract the JSON object from the raw string
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("No JSON object found in response");
+// const sanitizeJSON = (raw) => {
+//   // First, try to extract the JSON object from the raw string
+//   const jsonMatch = raw.match(/\{[\s\S]*\}/);
+//   if (!jsonMatch) throw new Error("No JSON object found in response");
 
-  let jsonStr = jsonMatch[0]
-    .trim()
-    // Replace curly quotes with escaped straight quotes
-    .replace(/[\u201C\u201D]/g, '\\"')
-    // Replace curly apostrophes
-    .replace(/[\u2018\u2019]/g, "'")
-    // Remove trailing commas before } or ]
-    .replace(/,\s*([}\]])/g, "$1");
+//   let jsonStr = jsonMatch[0]
+//     .trim()
+//     // Replace curly quotes with escaped straight quotes
+//     .replace(/[\u201C\u201D]/g, '\\"')
+//     // Replace curly apostrophes
+//     .replace(/[\u2018\u2019]/g, "'")
+//     // Remove trailing commas before } or ]
+//     .replace(/,\s*([}\]])/g, "$1");
 
-  return jsonStr;
-};
+//   return jsonStr;
+// };
