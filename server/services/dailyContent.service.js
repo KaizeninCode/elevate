@@ -6,7 +6,6 @@ import { ensureVerseIndex } from "./verseIndex.service.js";
 import { getDailyVerseId } from "../utils/seededRandom.js";
 import { generateWithDeepseek } from "./deepseek.service.js";
 
-
 dotenv.config();
 
 const BIBLE_API_KEY = process.env.BIBLE_API_KEY;
@@ -71,12 +70,17 @@ const fetchDevotional = async (verse) => {
         "body": "...",
         "reflection": "..."
     }
+
+    CRITICAL FORMATTING RULES:
+    - Return ONLY a valid JSON object, no markdown, no preamble, no code fences
+    - Use ONLY straight double quotes for JSON structure
+    - Inside string values, use single quotes or escaped double quotes (\") for any quotations
+    - Do not use curly/smart quotes (" " ' ') anywhere
+    - The JSON must be parseable by JSON.parse()
     `;
 
-  
-
-  const raw = await generateWithDeepseek(prompt)
-  console.log(raw)
+  const raw = await generateWithDeepseek(prompt);
+  console.log(raw);
   //   return JSON.parse(raw);
   try {
     return JSON.parse(sanitizeJSON(raw));
@@ -110,14 +114,18 @@ export const getOrFetchDailyContent = async () => {
 
 // sanitize the JSON response when necessary -> catch edge cases
 const sanitizeJSON = (raw) => {
-  return raw
+  // First, try to extract the JSON object from the raw string
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error("No JSON object found in response");
+
+  let jsonStr = jsonMatch[0]
     .trim()
-    // Strip markdown code fences if model adds them
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/```\s*$/i, "")
-    // Replace single-quoted keys/values with double quotes
-    .replace(/'/g, '"')
+    // Replace curly quotes with escaped straight quotes
+    .replace(/[\u201C\u201D]/g, '\\"')
+    // Replace curly apostrophes
+    .replace(/[\u2018\u2019]/g, "'")
     // Remove trailing commas before } or ]
     .replace(/,\s*([}\]])/g, "$1");
-};
 
+  return jsonStr;
+};
