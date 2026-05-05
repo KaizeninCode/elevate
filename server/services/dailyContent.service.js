@@ -67,9 +67,9 @@ const fetchDevotional = async (verse) => {
     - Tone: warm, accessible, and non-denominational
     - Return ONLY valid JSON in this exact shape, no markdown, no preamble:
     {
-        'title': "...",
-        'body': "...",
-        'reflection': "..."
+        "title": "...",
+        "body": "...",
+        "reflection": "..."
     }
     `;
 
