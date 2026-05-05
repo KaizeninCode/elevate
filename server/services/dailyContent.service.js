@@ -67,9 +67,9 @@ const fetchDevotional = async (verse) => {
     - Tone: warm, accessible, and non-denominational
     - Return ONLY valid JSON in this exact shape, no markdown, no preamble:
     {
-        'title': '...',
-        'body': '...',
-        'reflection': '...',
+        'title': "...",
+        'body': "...",
+        'reflection': "..."
     }
     `;
 
@@ -79,7 +79,7 @@ const fetchDevotional = async (verse) => {
   console.log(raw)
   //   return JSON.parse(raw);
   try {
-    return JSON.parse(raw);
+    return JSON.parse(sanitizeJSON(raw));
   } catch (e) {
     console.error("Failed to parse AI devotional JSON:", raw, e);
     return {
@@ -106,5 +106,18 @@ export const getOrFetchDailyContent = async () => {
   });
 
   return doc;
+};
+
+// sanitize the JSON response when necessary -> catch edge cases
+const sanitizeJSON = (raw) => {
+  return raw
+    .trim()
+    // Strip markdown code fences if model adds them
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```\s*$/i, "")
+    // Replace single-quoted keys/values with double quotes
+    .replace(/'/g, '"')
+    // Remove trailing commas before } or ]
+    .replace(/,\s*([}\]])/g, "$1");
 };
 
